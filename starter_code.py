@@ -35,7 +35,15 @@ def lcs_recursive(seq1, seq2):
     # Hint: If last characters match, LCS length = 1 + LCS of remaining sequences
     # Hint: If last characters don't match, try removing last char from each sequence, take max
     
-    pass  # Delete this and write your code
+    # Base case: if either sequence is empty, LCS is 0
+    if not seq1 or not seq2:
+        return 0
+    # If last characters match, add 1 and recurse on remaining
+    if seq1[-1] == seq2[-1]:
+        return 1 + lcs_recursive(seq1[:-1], seq2[:-1])
+    # If last characters don't match, recurse by removing last char from each, take max
+    else:
+        return max(lcs_recursive(seq1[:-1], seq2), lcs_recursive(seq1, seq2[:-1]))
 
 
 # ============================================================================
@@ -65,7 +73,24 @@ def lcs_memoization(seq1, seq2):
     # Hint: Check cache before computing, store result before returning
     # Hint: You may want to create a helper function that takes indices
     
-    pass  # Delete this and write your code
+    cache = {}
+
+    def helper(i, j):
+        # Base case: if either index is below 0, LCS is 0
+        if i < 0 or j < 0:
+            return 0
+        # Check cache
+        if (i, j) in cache:
+            return cache[(i, j)]
+        # If characters match
+        if seq1[i] == seq2[j]:
+            result = 1 + helper(i - 1, j - 1)
+        else:
+            result = max(helper(i - 1, j), helper(i, j - 1))
+        cache[(i, j)] = result
+        return result
+
+    return helper(len(seq1) - 1, len(seq2) - 1)
 
 
 # ============================================================================
@@ -96,7 +121,16 @@ def lcs_tabulation(seq1, seq2):
     # Hint: If characters match: dp[i][j] = dp[i-1][j-1] + 1
     # Hint: If characters don't match: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
     
-    pass  # Delete this and write your code
+    m, n = len(seq1), len(seq2)
+    # Create DP table with (m+1) x (n+1) size, initialized to 0
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if seq1[i - 1] == seq2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+    return dp[m][n]
 
 
 # ============================================================================
@@ -239,9 +273,8 @@ if __name__ == "__main__":
     print("Implement the LCS functions above, then run tests.\n")
     
     # Uncomment these as you complete each part:
-    
-    # test_small_cases()
-    # time_recursive()
-    # compare_all_approaches()
+    test_small_cases()
+    time_recursive()
+    compare_all_approaches()
     
     print("\n⚠ Uncomment the test functions in the main block to run tests!")
